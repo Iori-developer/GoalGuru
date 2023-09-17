@@ -1,6 +1,5 @@
 predictix.db
 config.py
-Procfile
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
