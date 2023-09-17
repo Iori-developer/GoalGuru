@@ -1,0 +1,37 @@
+{% extends "base.html" %} {% block content %}
+<div class="main-content">
+  <div class="home-hub-padding">
+    <div class="home-hub">
+      <h3 id="predictions-title">{{ league_name }}:</h3>
+      <div class="table-container">
+        <div class="table-scroll">
+          <table class="styled-table">
+            <thead>
+              <tr>
+                <th>Username</th>
+                <th>Team</th>
+                <th>Recent Predictions</th>
+                <th>Points</th>
+                <th>Rank</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for user in user_data %}
+              <tr>
+                <td>{{ user['user_model'].username }}</td>
+                <td>{{ user['user_model'].favourite_team }}</td>
+                <td><a href="{{ url_for('rival_predictions', username=user['user_model'].username, user_id=user['user_model'].user_id) }}">View</a></td>
+                <td>{{ user['score'] }}</td>
+                <td>{{ loop.index0 + 1 }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="{{ url_for('static', filename='league.js') }}"></script>
+{% endblock %}

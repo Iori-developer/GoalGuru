@@ -1,0 +1,23 @@
+{% extends "base.html" %} {% block content %}
+
+<div class="main-content">
+  <div class="home-hub-padding">
+    <div class="home-hub">
+      <h3 id="predictions-title">{{ username }}'s Predictions</h3>
+      <form id="game-week-filter" action="" method="POST" data-url="{{ url_for('filter_game_week') }}" data-user="{{ user_id }}">
+        <label for="game-week">Filter Game Week</label>
+        <select id="game-week" name="game-week">
+            {% for i in range(1, current_game_week) %}
+                <option>{{ i }}</option>
+            {% endfor %}
+        </select>
+        <input id="game-week-filter-submit" type="submit" value="Filter" />
+      </form>
+      <form id="fixtures" class="fixtures table-scroll-predictions" action="{{ url_for('process_predictions') }}" method="POST">
+      </form>
+    </div>
+  </div>
+</div>
+
+<script src="{{ url_for('static', filename='predictions.js') }}"></script>
+{% endblock %}

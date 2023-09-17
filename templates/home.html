@@ -1,0 +1,64 @@
+{% extends "base.html" %} {% block content %}
+<div class="main-content">
+  <div class="left-bar">
+    <div id="user-details">
+      <h3>Details</h3>
+      <h4>Username: {{ current_user.username }}</h4>
+      <h4>Email: {{ current_user.email }}</h4>
+      <h4>Team: {{ current_user.favourite_team }}</h4>
+    </div>
+    <form class="create-league-form" action="" method="POST" id="join-league-form" data-url="{{ url_for('join_league') }}">
+      <label id="join-league-name-label" for="join-league-name">Join League:</label
+      ><br />
+      <input type="text" id="join-league-name" name="league-name" /><br />
+      <input id="join-league-form-button" type="submit" value="Join" />
+    </form>
+    <form class="create-league-form" action="" method="POST" id="create-league-form" data-url="{{ url_for('create_league') }}">
+      <label id="create-league-name-label" for="create-league-name">Create League:</label
+      ><br />
+      <input type="text" id="create-league-name" name="league-name" /><br />
+      <input id="create-league-form-button" type="submit" value="Create" />
+    </form>
+  </div>
+  <div class="home-hub-padding">
+    <div class="home-hub">
+      <div class="predictions-wrapper">
+        <h3 id="score-title">Overall Score:</h3>
+        <h3 id="score">{{ overall_score }}</h3>
+      </div>
+      <div class="predictions-wrapper">
+        <h3 id="predictions-title-home" class="predictions-wrapper-element">Predictions:</h3>
+        <a href="{{ url_for('predictions') }}" class="predictions-wrapper-element" id="view-predictions">View</a>
+      </div>
+      <h3 id="leagues-title">Leagues:</h3>
+      <div class="table-container">
+        <div class="table-scroll">
+          <table class="styled-table">
+            <thead>
+              <tr>
+                <th>League Name</th>
+                <th>Members</th>
+                <th>Rank</th>
+                <th>View Details</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for league in leagues %}
+              <tr>
+                <td>{{ league['league_name'] }}</td>
+                <td>{{ league['members_count'] }}</td>
+                <td>{{ league['rank'] }}</td>
+                <td><a href="{{ url_for('league', league=league['league_name']) }}">View</a></td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="{{ url_for('static', filename='user-home.js') }}"></script>
+{% endblock %}
+

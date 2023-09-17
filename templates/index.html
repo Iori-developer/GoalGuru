@@ -1,0 +1,18 @@
+{% extends "base.html" %} {% block content %}
+    <div class="center-wrapper">
+      <div class="heading">
+        <h1>GoalGuru.</h1>
+        <h3><i>Predict, Compete, Prevail</i></h3>
+      </div>
+      <div class="center-svg-container">
+        <img src="../static/white-football.svg" alt="football" />
+      </div>
+    </div>
+
+    <div class="buttons-container">
+        <a href="{{ url_for('login') }}"><button class="index-button" >Log In</button></a>
+        <a href="{{ url_for('register') }}"><button class="index-button" >Register</button></a>
+    </div>
+
+    <script src="{{ url_for('static', filename='index.js') }}"></script>
+{% endblock %}

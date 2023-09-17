@@ -1,0 +1,58 @@
+{% extends "base.html" %} {% block content %}
+<div class="register-center-wrapper">
+  <h2 id="reigster-title">Register</h2>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <p>{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+  <div class="register-form-wrapper">
+    <form class="register-form" action="{{ url_for('register') }}" method="POST">
+      <div class="inputs-wrapper">
+        <div class="grid-item">
+            <label for="username">Username:</label><br />
+            <input
+            class="register-form-input"
+            type="text"
+            id="username"
+            name="username"
+            /><br />
+        </div>
+
+        <div class="grid-item">
+            <label for="email">Email:</label><br />
+            <input
+            class="register-form-input"
+            type="text"
+            id="email"
+            name="email"
+            /><br />
+        </div>
+
+        <div class="grid-item">
+            <label for="password">Password:</label><br />
+            <input
+            class="register-form-input"
+            type="text"
+            id="password"
+            name="password"
+            /><br />
+        </div>
+
+        <div class="grid-item">
+            <label for="team">Favourite Team:</label><br />
+            <select class="register-form-input" id="team" name="team">
+                {% for team in teams %}
+                    <option>{{ team }}</option>
+                {% endfor %}
+            </select>
+            /><br />
+        </div>
+      </div>
+      <input id="register-form-submit" type="submit" value="Register" />
+    </form>
+  </div>
+</div>
+{% endblock %}

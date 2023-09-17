@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GoalGuru</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+  </head>
+  <body>
+    <nav>
+      <div class="nav-left-items">
+        <p>GoalGuru</p>
+        <div class="svg-container">
+          <img src="../static/blue-logo-football.svg" alt="football" />
+        </div>
+        {% if logged_in %}
+        <p>{{ current_user.username }}</p>
+        {% endif %}
+      </div>
+      <ul class="nav-right-items">
+        {% if not logged_in: %}
+        <li class="nav-bar-item"><a href="{{ url_for('login') }}">Log In</a></li>
+        <li class="nav-bar-item"><a href="{{ url_for('register') }}">Register</a></li>
+        {% endif %}
+        <li class="nav-bar-item"><a href="{{ url_for('index') }}">Log Out</a></li>
+      </ul>
+    </nav>
+
+    {% block content %} {% endblock %}
+  </body>
+</html>
