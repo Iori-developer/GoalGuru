@@ -60,3 +60,26 @@ def get_fixtures(game_week_no, session):
         session.add(new_fixture)
 
     session.commit()
+
+
+def update_fixtures_with_results(game_week_no, session):
+    querystring = {"league": "39", "season": "2023", "round": f"Regular Season - {game_week_no}"}
+
+    headers = {
+        "X-RapidAPI-Key": config.RAPID_API_KEY,
+        "X-RapidAPI-Host": "api-football-v1.p.rapidapi.com"
+    }
+
+    response = requests.get(FIXTURES_API_URL, headers=headers, params=querystring)
+
+    data = response.json()
+    results_data = data['response']
+    print(results_data)
+
+    for result in results_data:
+        fixture = session.query(Fixture).filter_by(fixture_id=result['fixture']['id']).first()
+
+        fixture.home_score = result['goals']['home']
+        fixture.away_score = result['goals']['away']
+
+

@@ -4,14 +4,18 @@ from flask import Flask, render_template, request, url_for, redirect, flash, sen
 # from sqlite3 import IntegrityError
 from sqlalchemy.exc import IntegrityError
 from werkzeug.security import generate_password_hash, check_password_hash
+
+import functions
 from app import app, Base
 from flask_login import login_user, LoginManager, login_required, current_user, logout_user
 from sqlalchemy import Column, Integer, ForeignKey, create_engine, Table, func, select
 from sqlalchemy.orm import relationship, Session
 from models import *
 from config import engine_url
+from apscheduler.schedulers.background import BackgroundScheduler
+from functions import *
 
-current_game_week = 3
+current_game_week = 5
 
 teams = ["Arsenal", "Aston Villa", "Bournemouth", "Brentford", "Brighton & Hove Albion", "Burnley", "Chelsea",
          "Crystal Palace", "Everton", "Fulham", "Liverpool", "Luton Town", "Manchester City", "Manchester United",
@@ -46,11 +50,17 @@ def load_user(user_id):
     return user
 
 
-# with app.app_context():
-#     # db.drop_all()
-#     Base.create_all()
+def daily_routines():
+    check_current_game_week()
+    update_scores()
 
 
+scheduler = BackgroundScheduler(daemon=True)
+scheduler.add_job(daily_routines, 'interval', hours=24)
+scheduler.start()
+
+
+# Run this every morning at 10am
 def check_current_game_week():
     global current_game_week
     current_date = datetime.now()
@@ -65,6 +75,7 @@ def check_current_game_week():
             break
 
     if update_current_game_week:
+        functions.update_fixtures_with_results(current_game_week, session)
         current_game_week += 1
         for fixture in fixtures:
             fixture.active = update_current_game_week
@@ -72,12 +83,12 @@ def check_current_game_week():
     print(current_game_week)
 
 
-def update_weekly_scores():
+# Then run this every morning. Note it will not do anything on some days when there has been no new results
+def update_scores():
     user_ids = [user[0] for user in session.execute(select(User.user_id))]
     for user in user_ids:
-        print(user)
         # Get the fixtures relevant to the current game week
-        fixtures = session.query(Fixture).filter_by(game_week=current_game_week)
+        fixtures = session.query(Fixture).filter_by(game_week=current_game_week - 1)
 
         # Get the results of these fixtures
         results = {}
@@ -161,12 +172,6 @@ def get_score(user_id):
         overall_score += score.score
 
     return overall_score
-
-
-# update_weekly_scores()
-
-
-# check_current_game_week()
 
 
 @app.route("/")
@@ -506,7 +511,8 @@ def process_predictions():
 def league():
     league_name = request.args.get('league')
     league_data = session.query(League).filter_by(name=league_name).first()
-    user_ids = [value[1] for value in session.query(league_user_association).filter_by(league_id=league_data.league_id).all()]
+    user_ids = [value[1] for value in
+                session.query(league_user_association).filter_by(league_id=league_data.league_id).all()]
     user_data = [session.query(User).filter_by(user_id=user_id).first() for user_id in user_ids]
     for i in range(len(user_data)):
         score = get_score(user_data[i].user_id)
@@ -523,15 +529,27 @@ def league():
 def rival_predictions():
     username = request.args.get('username')
     user_id = request.args.get('user_id')
-    return render_template('rival-predictions.html', logged_in=True, current_game_week=current_game_week, username=username, user_id=user_id)
+    return render_template('rival-predictions.html', logged_in=True, current_game_week=current_game_week,
+                           username=username, user_id=user_id)
 
 
 if __name__ == "__main__":
     app.run(debug=True)
 
-# Example of creating a Fixture and associating it with a GameWeek
-# fixture = Fixture(game_week_id=1)  # Replace 1 with the desired game week ID
-# game_week = GameWeek.query.filter_by(game_week_number=1).first()  # Replace 1 with the desired game week number
-# fixture.game_week_ref = game_week
-# db.session.add(fixture)
-# db.session.commit()
+# def sensor():
+#     """ Function for test purposes. """
+#     print("Scheduler is alive!")
+#
+# sched = BackgroundScheduler(daemon=True)
+# sched.add_job(sensor,'interval',minutes=60)
+# sched.start()
+#
+# app = Flask(__name__)
+#
+# @app.route("/home")
+# def home():
+#     """ Function for test purposes. """
+#     return "Welcome Home :) !"
+#
+# if __name__ == "__main__":
+#     app.run()
