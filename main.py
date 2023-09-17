@@ -14,6 +14,7 @@ from models import *
 from config import engine_url
 from apscheduler.schedulers.background import BackgroundScheduler
 from functions import *
+import os
 
 current_game_week = 5
 
@@ -534,7 +535,8 @@ def rival_predictions():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
 
 # def sensor():
 #     """ Function for test purposes. """
