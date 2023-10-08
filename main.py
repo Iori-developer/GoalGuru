@@ -11,7 +11,6 @@ from flask_login import login_user, LoginManager, login_required, current_user, 
 from sqlalchemy import Column, Integer, ForeignKey, create_engine, Table, func, select
 from sqlalchemy.orm import relationship, Session
 from models import *
-from config import engine_url
 from apscheduler.schedulers.background import BackgroundScheduler
 from functions import *
 import os
@@ -34,7 +33,8 @@ User.leagues = relationship("League", secondary=league_user_association, back_po
 League.users = relationship("User", secondary=league_user_association, back_populates="leagues")
 
 # Create and use the database
-engine = create_engine(engine_url)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///predictix.db'
+engine = create_engine('sqlite:///predictix.db')
 Base.metadata.create_all(engine)
 
 session = Session(engine)
@@ -42,6 +42,8 @@ session = Session(engine)
 # Configure Flask-Login's login manager
 login_manager = LoginManager()
 login_manager.init_app(app)
+
+# print("HI")
 
 
 # Create a user_loader callback
